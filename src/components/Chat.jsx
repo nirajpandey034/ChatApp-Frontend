@@ -30,7 +30,7 @@ export default function Chat({ msg }) {
                   ...chatStyle,
                 }
               : {
-                  backgroundColor: "yellow",
+                  backgroundColor: "#66FF99",
                   marginRight: "auto",
                   marginTop: "0.5rem",
                   ...chatStyle,
