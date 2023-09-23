@@ -2,6 +2,8 @@
 
 Screenshots and Live Recordings are included in the repo.
 
+[Live App](https://chat-buddies.netlify.app/)
+
 [Screenshot](https://github.com/nirajpandey034/ChatApp-Frontend/blob/master/ChatApp-Screenshot.png)
 
 [Recording](https://github.com/nirajpandey034/ChatApp-Frontend/blob/master/ChatApp-Recording.mp4)
