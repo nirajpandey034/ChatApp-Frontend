@@ -13,7 +13,7 @@ export default function Chat({ msg }) {
   }, []);
 
   const chatStyle = {
-    padding: "1rem",
+    padding: "0.5rem",
     borderRadius: "1rem",
   };
   return (
@@ -37,7 +37,42 @@ export default function Chat({ msg }) {
                 }
           }
         >
-          {msg.text}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              gap: "-1%",
+            }}
+          >
+            <p
+              style={{
+                fontSize: "1.2rem",
+                marginRight: "auto",
+                fontStyle: "italic",
+                marginTop: 0,
+                marginBottom: 0,
+              }}
+            >
+              <span
+                style={{
+                  fontStyle: "italic",
+                  fontSize: "1rem",
+                  textDecoration: "underline",
+                }}
+              >
+                {msg.sender}
+                {"   "}
+              </span>
+            </p>
+            <p
+              style={{
+                marginRight: "auto",
+              }}
+            >
+              {msg.text}
+            </p>
+          </div>
         </li>
       ) : (
         <li
