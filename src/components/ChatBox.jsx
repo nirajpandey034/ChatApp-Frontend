@@ -169,7 +169,7 @@ export default function ChatBox({ roomId }) {
           </button>
         </div>
         <span style={{ marginTop: "1rem" }}>
-          Share this with whom you want to chat.
+          Share this with whomever you want to join this room.
           <span>{"   "}</span>
           <a
             onClick={async (e) => {
