@@ -3,7 +3,6 @@ import { useState, useEffect, useRef } from "react";
 import Socket from "../config/socket";
 import Chat from "./Chat";
 export default function ChatBox({ roomId }) {
-  // const [msg, setMsg] = useState("");
   const [msgList, setMsgList] = useState([]);
   const [sharableURL, setSharableURL] = useState("");
 
