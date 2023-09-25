@@ -1,12 +1,6 @@
 /* eslint-disable react/prop-types */
 import { useState, useEffect, useRef } from "react";
-import io from "socket.io-client";
-const socket = io(
-  `${import.meta.env.VITE_SOCKET_URL}?user=${window.localStorage.getItem(
-    "username"
-  )}`,
-  { autoConnect: false }
-);
+import Socket from "../config/socket";
 import Chat from "./Chat";
 export default function ChatBox({ roomId }) {
   const [msg, setMsg] = useState("");
@@ -14,6 +8,8 @@ export default function ChatBox({ roomId }) {
   const [sharableURL, setSharableURL] = useState("");
 
   const inputRef = useRef(null);
+
+  const socket = useRef(null);
 
   const styles = {
     buttonStyle: {
@@ -38,13 +34,14 @@ export default function ChatBox({ roomId }) {
 
     // establish connection and creating room
     if (roomId.length > 0) {
-      socket.connect();
-      socket.emit("room", roomId);
-      socket.emit(roomId, {
+      socket.current.connect();
+      socket.current.emit("setRoom", roomId);
+      socket.current.emit("new-message", {
         text: `${window.localStorage.getItem("username")} joined the Chat`,
         sender: window.localStorage.getItem("username"),
-        id: `${socket.id}${Math.random()}`,
-        socketID: socket.id,
+        id: `${socket.current.id}${Math.random()}`,
+        roomId: roomId,
+        socketID: socket.current.id,
         type: "special",
       });
     }
@@ -56,17 +53,19 @@ export default function ChatBox({ roomId }) {
           ...msgs,
           {
             text: msg,
-            id: `${socket.id}${Math.random()}`,
+            id: `${socket.current.id}${Math.random()}`,
             sender: window.localStorage.getItem("username"),
-            socketID: socket.id,
+            socketID: socket.current.id,
             type: "regular",
           },
         ]);
-        socket.emit(roomId, {
+
+        socket.current.emit("new-message", {
           text: msg,
-          id: `${socket.id}${Math.random()}`,
+          id: `${socket.current.id}${Math.random()}`,
           sender: window.localStorage.getItem("username"),
-          socketID: socket.id,
+          socketID: socket.current.id,
+          roomId: roomId,
           type: "regular",
         });
         setMsg("");
@@ -79,14 +78,18 @@ export default function ChatBox({ roomId }) {
     }
   };
   useEffect(() => {
-    if (socket !== "") {
-      socket.on(roomId, (msg) => {
+    if (socket?.current !== null) {
+      socket?.current?.on(roomId, (msg) => {
         if (msg.sender !== window.localStorage.getItem("username")) {
           setMsgList((msgs) => [...msgs, msg]);
         }
       });
     }
-  }, [socket]);
+
+    return () => {
+      socket.current.off(roomId);
+    };
+  }, [socket.current]);
 
   useEffect(() => {
     if (!window.localStorage.getItem("username")) {
@@ -95,18 +98,9 @@ export default function ChatBox({ roomId }) {
         window.localStorage.setItem("username", userName.toLowerCase());
       else location.reload();
     }
-    checkURLandConnectSocket();
+    socket.current = Socket;
+    socket.current.on("connect", checkURLandConnectSocket);
     inputRef.current.focus();
-    return () => {
-      socket.emit(roomId, {
-        text: `${window.localStorage.getItem("username")} left the Chat`,
-        sender: window.localStorage.getItem("username"),
-        id: `${socket.id}${Math.random()}`,
-        socketID: socket.id,
-        type: "special",
-      });
-      socket.disconnect();
-    };
   }, []);
   return (
     <div>
