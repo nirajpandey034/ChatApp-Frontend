@@ -3,13 +3,13 @@ import { useState, useEffect, useRef } from "react";
 import Socket from "../config/socket";
 import Chat from "./Chat";
 export default function ChatBox({ roomId }) {
-  const [msg, setMsg] = useState("");
+  // const [msg, setMsg] = useState("");
   const [msgList, setMsgList] = useState([]);
   const [sharableURL, setSharableURL] = useState("");
 
   const inputRef = useRef(null);
-
   const socket = useRef(null);
+  const msg = useRef(null);
 
   const styles = {
     buttonStyle: {
@@ -19,8 +19,8 @@ export default function ChatBox({ roomId }) {
       height: "3.2rem",
     },
   };
-  const msgInputHandler = (e) => {
-    setMsg(e.target.value);
+  const msgInputHandler = () => {
+    msg.current = inputRef.current.value;
   };
 
   const checkURLandConnectSocket = () => {
@@ -47,12 +47,12 @@ export default function ChatBox({ roomId }) {
     }
   };
   const buttonClickHandler = () => {
-    if (msg.trim().length > 0) {
+    if (msg.current.trim().length > 0) {
       if (socket !== "") {
         setMsgList((msgs) => [
           ...msgs,
           {
-            text: msg,
+            text: msg.current,
             id: `${socket.current.id}${Math.random()}`,
             sender: window.localStorage.getItem("username"),
             socketID: socket.current.id,
@@ -61,14 +61,15 @@ export default function ChatBox({ roomId }) {
         ]);
 
         socket.current.emit("new-message", {
-          text: msg,
+          text: msg.current,
           id: `${socket.current.id}${Math.random()}`,
           sender: window.localStorage.getItem("username"),
           socketID: socket.current.id,
           roomId: roomId,
           type: "regular",
         });
-        setMsg("");
+        msg.current = null;
+        inputRef.current.value = "";
         inputRef.current?.scrollIntoView({
           block: "nearest",
           behavior: "smooth",
@@ -141,7 +142,6 @@ export default function ChatBox({ roomId }) {
             type="text"
             ref={inputRef}
             placeholder="Give your message"
-            value={msg}
             style={{
               width: "90%",
               height: "3rem",
